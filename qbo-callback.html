@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Strata Agents – QuickBooks sign-in</title>
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;max-width:46rem;margin:2rem auto;padding:0 1rem;line-height:1.5;color:#222}
+textarea{width:100%;height:9rem;font-family:ui-monospace,monospace;font-size:.85rem;padding:.5rem;box-sizing:border-box}
+button{font-size:1rem;padding:.5rem 1.2rem;margin-top:.5rem;cursor:pointer}
+.note{background:#fff7e0;border:1px solid #e8c766;padding:.6rem .8rem;border-radius:6px}
+.err{background:#fde8e8;border:1px solid #e09a9a;padding:.6rem .8rem;border-radius:6px}
+#status{margin-left:.6rem;color:#2a7a2a}
+</style>
+</head>
+<body>
+<h1>QuickBooks sign-in: almost done</h1>
+<p id="msg">Copy the full address below and paste it into the sign-in command that is waiting on your server.</p>
+<textarea id="url" readonly></textarea>
+<div><button id="copy" type="button">Copy</button><span id="status" aria-live="polite"></span></div>
+<p class="note"><strong>The code in this address is single-use</strong> and expires in a few minutes. Paste it once, right away. If the command says it failed, run the command again to get a fresh link. Do not share this address.</p>
+<p>This page does nothing else: it makes no network requests, stores nothing, and has no analytics.</p>
+<script>
+(function () {
+  var u = window.location.href, box = document.getElementById("url");
+  box.value = u;
+  var q = new URLSearchParams(window.location.search);
+  if (q.get("error")) {
+    var m = document.getElementById("msg");
+    m.className = "err";
+    m.textContent = "QuickBooks returned an error (" + q.get("error") + "). You can still paste the address so the command reports it, then run the command again.";
+  } else if (!q.get("code")) {
+    document.getElementById("msg").textContent = "This address has no sign-in code. Start the sign-in from the command on your server.";
+  }
+  document.getElementById("copy").addEventListener("click", function () {
+    var s = document.getElementById("status");
+    function ok() { s.textContent = "Copied."; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(u).then(ok, function () { box.select(); document.execCommand("copy"); ok(); });
+    } else { box.select(); document.execCommand("copy"); ok(); }
+  });
+  box.addEventListener("focus", function () { box.select(); });
+})();
+</script>
+</body>
+</html>
